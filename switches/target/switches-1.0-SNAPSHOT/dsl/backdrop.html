@@ -1,0 +1,61 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<link href="css/main.css" rel="stylesheet" />
+<script type="text/javascript">
+	var audio = new Audio('media/panoramic-entry_mj_gwdrd.mp3');
+	var fade_in_id = 0;
+	var poll_id = 0;
+	function init() {
+		lock();
+		//poll_id = setInterval(poll, 5000);
+		document.addEventListener("keydown", function(event)
+		{
+			event = event || window.event;
+		    if (event.keyCode == 76) {
+		        unlock();
+		    }
+		});
+	}
+	function poll() {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState == 4 && xhttp.status == 200) {
+				var respJson = xhttp.responseText;
+				switchObj = JSON.parse(respJson);
+				if ("Y" == switchObj.videoWallSwitch) {
+					unlock();
+				}
+			}
+		};
+		xhttp.open("GET", "http://rsdi-cuhk-library.appspot.com/switch", true);
+		xhttp.timeout = 1000;
+		xhttp.ontimeout = lock;
+		xhttp.onerror = unlock;
+		xhttp.send();
+	}
+	function lock() {
+		document.getElementById("unlock_screen").style.opacity = 0;
+	}
+	function unlock() {
+		document.getElementById("unlock_screen").style.opacity = 1;
+		audio.volume = 0.1;
+		audio.play();
+		clearInterval(poll_id);
+		fade_in_id = setInterval(fade_in, 500);
+	}
+	function fade_in() {
+		if (audio.volume < 0.9)
+			audio.volume += 0.1;
+		else
+			clearInterval(fade_in_id);
+
+	}
+</script>
+</head>
+<body onload="init()" class="lock_screen">
+	<div id="unlock_screen" class="unlock_screen"></div>
+</body>
+</html>

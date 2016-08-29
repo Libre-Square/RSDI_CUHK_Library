@@ -1,0 +1,241 @@
+<html>
+<head>
+<style type="text/css">
+.container
+{
+	border: solid 2px red;
+	cursor: default;
+	overflow: visible;
+	padding: 0px;
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+	perspective: 3000px;
+	perspective-origin: 10% 50%;
+	position: absolute;
+}
+.page
+{
+	border: solid 2px;
+	text-align: center;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	background: white;
+	display: inline-block;
+	margin: 0px;
+	transform-style: preserve-3d;
+	-webkit-backface-visibility: hidden;
+   	backface-visibility: hidden;
+}
+//.page img
+//{
+	//width: 100px;
+	//height: 200px;
+	//max-width: 100px;
+	//max-height: 200px;
+//}
+</style>
+<script type="text/javascript">
+var IS_DRAGGING = false;
+var DRAG_START_X = 0;
+var FIRST_PAGE_X = 0;
+var MIN_FIRST_PAGE_X = 0;
+var MAX_FIRST_PAGE_X = 0;
+var VIEWER;
+var PAGES_LIST = new Array();
+function initViewer(elementId)
+{
+	VIEWER = document.getElementById(elementId);
+	if (VIEWER)
+	{
+		var rect = VIEWER.getBoundingClientRect();
+		var viewerHeight = 0;
+		var viewerWidth = 0;
+		var pageMinOffset = rect.left;
+		var pages = VIEWER.getElementsByClassName('page');
+		for (idx = 0; idx < pages.length; idx++)
+		{
+			var pElm = pages[idx];
+			PAGES_LIST.push(pElm);
+			pElm.style.zIndex = pages.length-idx;
+			pElm.style.transformOrigin = idx % 2 == 0 ? "center left" : "center right";
+			//pElm.style.transform = idx % 2 == 0 ? "translateY(" + pElm.offsetWidth + "px) rotateY(180deg)" : "";
+			
+			viewerHeight = pElm.offsetHeight > viewerHeight ? pElm.offsetHeight : viewerHeight;
+			viewerWidth += pElm.offsetWidth;
+			pageMinOffset = pElm.offsetLeft < pageMinOffset ? pElm.offsetLeft : pageMinOffset;
+		}
+		VIEWER.style.height = viewerHeight;
+		VIEWER.style.width = viewerWidth;
+		MIN_FIRST_PAGE_X = pageMinOffset;
+		MAX_FIRST_PAGE_X = viewerWidth - PAGES_LIST[0].offsetWidth;
+	}
+	VIEWER.addEventListener("mousedown", startDrag);
+	VIEWER.addEventListener("mouseup", stopDrag);
+	document.addEventListener("mousemove", doDrag);
+	document.addEventListener("mouseup", stopDrag);
+}
+function startDrag(event)
+{
+	if (PAGES_LIST.length <= 0)
+		return;
+	var target = event.target || event.srcElement;
+	IS_DRAGGING = true;
+	FIRST_PAGE_X = PAGES_LIST[0].offsetLeft;
+	DRAG_START_X = event.pageX;
+}
+function stopDrag(event)
+{
+	if (IS_DRAGGING)
+		IS_DRAGGING = false;
+}
+function doDrag(event)
+{
+	if (!IS_DRAGGING || PAGES_LIST.length <= 0)
+		return;
+	var target = event.target || event.srcElement;
+	var firstPage = PAGES_LIST[0];
+	var firstPageOffsetX = FIRST_PAGE_X + (event.pageX - DRAG_START_X);
+	render(target, firstPageOffsetX);
+}
+function render(elm, firstPageOffsetX)
+{
+	if (PAGES_LIST.length <= 0)
+		return;
+	var firstPage = PAGES_LIST[0];
+	var previousPageLeftOffset = (firstPageOffsetX < MIN_FIRST_PAGE_X) ? MIN_FIRST_PAGE_X : (firstPageOffsetX > MAX_FIRST_PAGE_X ? MAX_FIRST_PAGE_X : firstPageOffsetX);
+	firstPage.style.left = previousPageLeftOffset;
+	var previousFlipPage = firstPage;
+	for (idx = 1; idx < PAGES_LIST.length; idx++)
+	{
+		var page = PAGES_LIST[idx];
+			
+		if (idx % 2 == 0)
+		{
+			previousPageLeftOffset = previousFlipPage.offsetLeft - previousPage.offsetWidth;
+			previousPageLeftOffset = previousPageLeftOffset < MIN_FIRST_PAGE_X ? MIN_FIRST_PAGE_X : previousPageLeftOffset;
+			previousPage.style.left = previousPageLeftOffset;
+			
+			var tiltAngle = 0;
+			var flipAngle = 180;
+			var translateOffset = 0;
+			if (previousPageLeftOffset < MIN_FIRST_PAGE_X + previousPage.offsetWidth + page.offsetWidth)
+			{
+				if (previousPageLeftOffset <= MIN_FIRST_PAGE_X + previousPage.offsetWidth)
+				{
+					var ratio = (previousPageLeftOffset - MIN_FIRST_PAGE_X) / previousPage.offsetWidth;
+					//tiltAngle = 80 * ratio;
+					tiltAngle = 65 * ratio;
+				}
+				else
+				{
+					var ratio = (previousPageLeftOffset - MIN_FIRST_PAGE_X - previousPage.offsetWidth) / page.offsetWidth;
+					//tiltAngle = 80 * (1 - ratio);
+					tiltAngle = 65 * (1 - ratio);
+				}
+				previousPage.style.transform = "translateX(" + translateOffset + "px) rotateY(" + tiltAngle + "deg)";
+				
+				if (tiltAngle > 0)
+				{
+					var baseL = previousPage.offsetWidth * Math.cos(tiltAngle * Math.PI / 180);
+					var dropL = previousPage.offsetWidth * Math.sin(tiltAngle * Math.PI / 180);
+					var dropOffset = previousFlipPage.offsetLeft - baseL;
+					var scale = 0;
+					if (dropOffset < MIN_FIRST_PAGE_X + page.offsetWidth)
+					{
+						var flipAngleRad = Math.atan(dropL / (MIN_FIRST_PAGE_X + page.offsetWidth - dropOffset));
+						scale = dropL / Math.sin(flipAngleRad);
+						flipAngle = 180 + flipAngleRad * 180 / Math.PI;
+					}
+					else
+					{
+						var flipAngleRad = Math.atan(dropL / (previousFlipPage.offsetLeft - baseL - MIN_FIRST_PAGE_X - page.offsetWidth));
+						scale = dropL / Math.sin(flipAngleRad);
+						flipAngle = 360 - flipAngleRad * 180 / Math.PI;
+					}
+					scale = scale / page.offsetWidth;
+					page.style.transform = "translateX(" + page.offsetWidth + "px) rotateY(" + flipAngle + "deg) scaleX(" + scale + ")";
+				}
+				else
+				{
+					page.style.transform = "translateX(0px) rotateY(0deg) scaleX(1.0)";
+				}
+				page.style.left = MIN_FIRST_PAGE_X;
+			}
+			else
+			{
+				page.style.left = previousPageLeftOffset - page.offsetWidth;
+				previousPage.style.transform = "translateX(0px) rotateY(0deg)";
+				page.style.transform = "translateX(0px) rotateY(0deg)";
+			}
+			previousFlipPage = page;
+		}
+		previousPage = page;
+	}
+}
+</script>
+</head>
+<body>
+<div id="viewer" class="container">
+	<div class="page"><img src="004970702\004970702_0001.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0002.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0003.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0004.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0005.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0006.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0007.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0008.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0009.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0010.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0011.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0012.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0013.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0014.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0015.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0016.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0017.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0018.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0019.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0020.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0021.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0022.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0023.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0024.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0025.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0026.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0027.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0028.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0029.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0030.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0031.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0032.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0033.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0034.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0035.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0036.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0037.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0038.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0039.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0040.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0041.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0042.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0043.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0044.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0045.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0046.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0047.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0048.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0049.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0050.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0051.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0052.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0053.jpg" /></div>
+	<div class="page"><img src="004970702\004970702_0054.jpg" /></div>
+</div>
+<script type="text/javascript">setTimeout("initViewer('viewer')", 200);</script>
+</body>
+</html>

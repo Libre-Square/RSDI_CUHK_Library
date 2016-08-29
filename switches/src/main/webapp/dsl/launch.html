@@ -1,0 +1,316 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<link href="css/impress.css" rel="stylesheet" />
+<link href="css/style.css" rel="stylesheet" />
+<link href="css/main.css" rel="stylesheet" />
+<script type="text/javascript">
+	var curr_pwd = "";
+	var isKeyPressed = false;
+	var launchEvent = new Event('launchEvent');
+	function initPwdControl() {
+		document.getElementById("launched").style.display = "none";
+		
+		updatePwdControl("");
+		document.getElementById("key2").addEventListener("mousedown",
+				setKeyPressed);
+		document.getElementById("key2").addEventListener("touchstart",
+				setKeyPressed);
+		document.getElementById("key2").addEventListener("mouseup",
+				updatePwdControl);
+		document.getElementById("key2").addEventListener("touchend",
+				updatePwdControl);
+		document.getElementById("key2").classList.add("numkey_press");
+
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState == 4 && xhttp.status == 200) {
+			}
+		};
+		xhttp.open("GET",
+				"http://rsdi-cuhk-library.appspot.com/switch?K=V&V=N", true);
+		//xhttp.send();
+	}
+	function setKeyPressed() {
+		isKeyPressed = true;
+	}
+	function updatePwdControl(event) {
+		if (!isKeyPressed)
+			return;
+		if (event.target) {
+			if ("" == curr_pwd && event.target.id.endsWith("key2"))
+				curr_pwd = "2";
+			else if ("2" == curr_pwd && event.target.id.endsWith("key0"))
+				curr_pwd = "20";
+			else if ("20" == curr_pwd && event.target.id.endsWith("key1"))
+				curr_pwd = "201";
+			else if ("201" == curr_pwd && event.target.id.endsWith("key6"))
+				curr_pwd = "2016";
+			else if ("2016" == curr_pwd && event.target.id.endsWith("key0"))
+				curr_pwd = "20160";
+			else if ("20160" == curr_pwd && event.target.id.endsWith("key3"))
+				curr_pwd = "201603";
+			else if ("201603" == curr_pwd && event.target.id.endsWith("key1"))
+				curr_pwd = "2016031";
+			else if ("2016031" == curr_pwd && event.target.id.endsWith("key7"))
+				curr_pwd = "20160317";
+			document.getElementById("curr_pwd").innerHTML = curr_pwd;
+		}
+		document.getElementById("key2").removeEventListener("mousedown",
+				setKeyPressed);
+		document.getElementById("key2").removeEventListener("touchstart",
+				setKeyPressed);
+		document.getElementById("key2").removeEventListener("mouseup",
+				updatePwdControl);
+		document.getElementById("key2").removeEventListener("touchend",
+				updatePwdControl);
+
+		document.getElementById("key1").removeEventListener("mousedown",
+				setKeyPressed);
+		document.getElementById("key1").removeEventListener("touchstart",
+				setKeyPressed);
+		document.getElementById("key1").removeEventListener("mouseup",
+				updatePwdControl);
+		document.getElementById("key1").removeEventListener("touchend",
+				updatePwdControl);
+
+		document.getElementById("key3").removeEventListener("mousedown",
+				setKeyPressed);
+		document.getElementById("key3").removeEventListener("touchstart",
+				setKeyPressed);
+		document.getElementById("key3").removeEventListener("mouseup",
+				updatePwdControl);
+		document.getElementById("key3").removeEventListener("touchend",
+				updatePwdControl);
+
+		document.getElementById("key6").removeEventListener("mousedown",
+				setKeyPressed);
+		document.getElementById("key6").removeEventListener("touchstart",
+				setKeyPressed);
+		document.getElementById("key6").removeEventListener("mouseup",
+				updatePwdControl);
+		document.getElementById("key6").removeEventListener("touchend",
+				updatePwdControl);
+
+		document.getElementById("key7").removeEventListener("mousedown",
+				setKeyPressed);
+		document.getElementById("key7").removeEventListener("touchstart",
+				setKeyPressed);
+		document.getElementById("key7").removeEventListener("mouseup",
+				updatePwdControl);
+		document.getElementById("key7").removeEventListener("touchend",
+				updatePwdControl);
+
+		document.getElementById("key0").removeEventListener("mousedown",
+				setKeyPressed);
+		document.getElementById("key0").removeEventListener("touchstart",
+				setKeyPressed);
+		document.getElementById("key0").removeEventListener("mouseup",
+				updatePwdControl);
+		document.getElementById("key0").removeEventListener("touchend",
+				updatePwdControl);
+
+		document.getElementById("key2").classList.remove("numkey_press");
+		document.getElementById("key1").classList.remove("numkey_press");
+		document.getElementById("key3").classList.remove("numkey_press");
+		document.getElementById("key6").classList.remove("numkey_press");
+		document.getElementById("key7").classList.remove("numkey_press");
+		document.getElementById("key0").classList.remove("numkey_press");
+
+		if ("2" == curr_pwd) {
+			document.getElementById("key0").addEventListener("mousedown",
+					setKeyPressed);
+			document.getElementById("key0").addEventListener("touchstart",
+					setKeyPressed);
+			document.getElementById("key0").addEventListener("mouseup",
+					updatePwdControl);
+			document.getElementById("key0").addEventListener("touchend",
+					updatePwdControl);
+			document.getElementById("key0").classList.add("numkey_press");
+		} else if ("20" == curr_pwd) {
+			document.getElementById("key1").addEventListener("mousedown",
+					setKeyPressed);
+			document.getElementById("key1").addEventListener("touchstart",
+					setKeyPressed);
+			document.getElementById("key1").addEventListener("mouseup",
+					updatePwdControl);
+			document.getElementById("key1").addEventListener("touchend",
+					updatePwdControl);
+			document.getElementById("key1").classList.add("numkey_press");
+		} else if ("201" == curr_pwd) {
+			document.getElementById("key6").addEventListener("mousedown",
+					setKeyPressed);
+			document.getElementById("key6").addEventListener("touchstart",
+					setKeyPressed);
+			document.getElementById("key6").addEventListener("mouseup",
+					updatePwdControl);
+			document.getElementById("key6").addEventListener("touchend",
+					updatePwdControl);
+			document.getElementById("key6").classList.add("numkey_press");
+		} else if ("2016" == curr_pwd) {
+			document.getElementById("key0").addEventListener("mousedown",
+					setKeyPressed);
+			document.getElementById("key0").addEventListener("touchstart",
+					setKeyPressed);
+			document.getElementById("key0").addEventListener("mouseup",
+					updatePwdControl);
+			document.getElementById("key0").addEventListener("touchend",
+					updatePwdControl);
+			document.getElementById("key0").classList.add("numkey_press");
+		} else if ("20160" == curr_pwd) {
+			document.getElementById("key3").addEventListener("mousedown",
+					setKeyPressed);
+			document.getElementById("key3").addEventListener("touchstart",
+					setKeyPressed);
+			document.getElementById("key3").addEventListener("mouseup",
+					updatePwdControl);
+			document.getElementById("key3").addEventListener("touchend",
+					updatePwdControl);
+			document.getElementById("key3").classList.add("numkey_press");
+		} else if ("201603" == curr_pwd) {
+			document.getElementById("key1").addEventListener("mousedown",
+					setKeyPressed);
+			document.getElementById("key1").addEventListener("touchstart",
+					setKeyPressed);
+			document.getElementById("key1").addEventListener("mouseup",
+					updatePwdControl);
+			document.getElementById("key1").addEventListener("touchend",
+					updatePwdControl);
+			document.getElementById("key1").classList.add("numkey_press");
+		} else if ("2016031" == curr_pwd) {
+			document.getElementById("key7").addEventListener("mousedown",
+					setKeyPressed);
+			document.getElementById("key7").addEventListener("touchstart",
+					setKeyPressed);
+			document.getElementById("key7").addEventListener("mouseup",
+					updatePwdControl);
+			document.getElementById("key7").addEventListener("touchend",
+					updatePwdControl);
+			document.getElementById("key7").classList.add("numkey_press");
+		}
+		isKeyPressed = false;
+		if ("20160317" == curr_pwd) {
+			fakeAuth();
+		}
+	}
+	
+	function fakeAuth() {
+		document.getElementById("curr_pwd").style.backgroundColor = "#DDFFDD";
+		window.setTimeout(unlock, 1000);
+	}
+
+	function auth() {
+		document.getElementById("curr_pwd").style.backgroundColor = "#DDDDDD";
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState == 4 && xhttp.status == 200) {
+				var respJson = xhttp.responseText;
+				switchObj = JSON.parse(respJson);
+				if ("Y" == switchObj.videoWallSwitch) {
+					document.getElementById("curr_pwd").style.backgroundColor = "#DDFFDD";
+					unlock();
+				}
+			}
+		};
+		xhttp.open("GET",
+				"http://rsdi-cuhk-library.appspot.com/switch?K=V&V=Y", true);
+		xhttp.timeout = 6000;
+		xhttp.ontimeout = unlock;
+		xhttp.onerror = unlock;
+		xhttp.send();
+	}
+
+	function unlock() {
+		document.getElementById("launched").style.display = "";
+		document.dispatchEvent(launchEvent);
+		document.getElementById("launch_video").play();
+	}
+</script>
+</head>
+<body class="impress-not-supported" onload="initPwdControl()"
+	oncontextmenu="return false;">
+	<div id="impress">
+		<div id="home" class="step home" data-x="0" data-y="0" data-scale="1">
+			<div class="wallpaper">
+				<div id="well" class="slider">
+					<br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br />
+					<br /> <br /> <br />
+					<h2>
+						<span>&rarr;&nbsp;&nbsp;Slide to begin</span>
+					</h2>
+				</div>
+			</div>
+		</div>
+
+		<div id="password" class="step password" data-x="0" data-y="0"
+			data-z="3000" data-rotate="0" data-scale="1">
+			<div class="numpad">
+				<div id="curr_pwd" class="numDisplay">&nbsp;</div>
+				<br />
+				<div id="key1" class="numkey">
+					1<span id="skey1" class="numkeySub">&nbsp;</span>
+				</div>
+				<div id="key2" class="numkey">
+					2<span id="skey2" class="numkeySub">ABC</span>
+				</div>
+				<div id="key3" class="numkey">
+					3<span id="skey3" class="numkeySub">DEF</span>
+				</div>
+				<br />
+				<div id="key4" class="numkey">
+					4<span id="skey4" class="numkeySub">GHI</span>
+				</div>
+				<div id="key5" class="numkey">
+					5<span id="skey5" class="numkeySub">JKL</span>
+				</div>
+				<div id="key6" class="numkey">
+					6<span id="skey6" class="numkeySub">MNO</span>
+				</div>
+				<br />
+				<div id="key7" class="numkey">
+					7<span id="skey7" class="numkeySub">PQRS</span>
+				</div>
+				<div id="key8" class="numkey">
+					8<span id="skey8" class="numkeySub">TUV</span>
+				</div>
+				<div id="key9" class="numkey">
+					9<span id="skey9" class="numkeySub">WXYZ</span>
+				</div>
+				<br />
+				<div class="numkey">
+					&nbsp;<span class="numkeySub">&nbsp;</span>
+				</div>
+				<div id="key0" class="numkey">
+					0<span id="skey0" class="numkeySub">&nbsp;</span>
+				</div>
+				<div class="numkey">
+					&nbsp;<span class="numkeySub">&nbsp;</span>
+				</div>
+				<br />
+			</div>
+		</div>
+
+		<div id="launched" class="step launched" data-x="0" data-y="0"
+			data-z="-3000" data-scale="1">
+			<div class="banner">
+				<img class="launch_image" src="images/final.png"></img>
+				<video id="launch_video" width="150%" height="150%" autoplay>
+					<source src="media/launch.ogg" type="video/ogg">
+				</video>
+				<div class="left_wall">
+				</div>
+				<div class="right_wall">
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script src="js/impress.js"></script>
+<script>
+	impress().init();
+</script>
+</html>

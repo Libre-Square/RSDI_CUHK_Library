@@ -1,0 +1,156 @@
+<html>
+<head>
+<style type="text/css">
+.container {
+	position: relative;
+	perspective: 8000px;
+}
+
+.cover {
+	-webkit-transition: 1.5s;
+	-webkit-transform-style: preserve-3d;
+	-moz-transition: 1.5s;
+	-moz-transform-style: preserve-3d;
+	-o-transition: 1.5s;
+	-o-transform-style: preserve-3d;
+	-ms-transition: 1.5s;
+	-ms-transform-style: preserve-3d;
+	transition: 1.5s;
+	transform-style: preserve-3d;
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+	-webkit-transform-origin: center center;
+	-moz-transform-origin: center center;
+	transform-origin: center center;
+	backface-visibility: hidden;
+}
+
+.front {
+	backface-visibility: hidden;
+	-webkit-transform-origin: center center;
+	-moz-transform-origin: center center;
+	transform-origin: center center;
+	backface-visibility: hidden;
+}
+
+.back {
+	-webkit-transform: rotateY(180deg);
+	-moz-transform: rotateY(180deg);
+	-ms-transform: rotateY(180deg);
+	-o-transform: rotateY(180deg);
+	transform: rotateY(180deg);
+	-webkit-transform-origin: center center; -moz-transform-origin : center
+	center; transform-origin : center center;
+	backface-visibility: hidden;
+	-moz-transform-origin: center center;
+	transform-origin: center center;
+}
+
+}
+.flipped {
+	-webkit-transform: rotateY(180deg);
+	-moz-transform: rotateY(180deg);
+	-ms-transform: rotateY(180deg);
+	-o-transform: rotateY(180deg);
+	transform: rotateY(180deg);
+	-webkit-transform-origin: center center;
+	-moz-transform-origin: center center;
+	transform-origin: center center;
+}
+}
+</style>
+<script type="text/javascript" src="js/jsc3d.webgl.js"></script>
+<script type="text/javascript" src="js/jsc3d.touch.js"></script>
+<script type="text/javascript" src="js/oridomi.js"></script>
+<script type="text/javascript">
+	var foldDiv;
+	var bookClosed = false;
+	var maxScrollStep = 40;
+	var scrollTimerID;
+	function init() {
+		foldDiv = new OriDomi(document.getElementById('foldingDiv'), {
+			vPanels : 27, // number of panels when folding left or right (vertically oriented)
+			hPanels : 1, // number of panels when folding top or bottom
+			speed : 10, // folding duration in ms
+			ripple : 3, // backwards ripple effect when animating
+			shadingIntesity : 0.8, // lessen the shading effect
+			perspective : 8000, // smaller values exaggerate 3D distortion
+			touchMoveCallback : updateFold,
+			sticky : false,
+			shading : 'soft' // change the shading type
+		});
+		document.getElementById('foldContent').style.opacity = 0;
+		document.getElementById('frontCover').style.display = "";
+		foldDiv.accordion(-89, "left", function() {
+			bookClosed = true;
+		});
+		foldDiv.setSpeed(2000);
+	}
+
+	function updateFold() {
+		if (foldDiv._lastOp.angle > -1)
+			foldDiv._lastOp.angle = -1;
+		else if (foldDiv._lastOp.angle < -89)
+			closeBook();
+	}
+
+	function openBook() {
+		if (!bookClosed)
+			return;
+		document.getElementById('foldContent').style.opacity = 1;
+		document.getElementById('frontCover').style.display = "none";
+		foldDiv.accordion(-1, "left");
+		bookClosed = false;
+		scrollTimerID = setInterval(scrollRight, 40);
+	}
+
+	function scrollRight() {
+		if (maxScrollStep > 0)
+		{
+			window.scrollBy(200, 0);
+			maxScrollStep--;
+		}
+		else
+			clearInterval(scrollTimerID);
+	}
+
+	function closeBook() {
+		if (!bookClosed) {
+			foldDiv.accordion(-89, "left", {
+				sticky : false
+			});
+			document.getElementById('foldContent').style.opacity = 0;
+			document.getElementById('frontCover').style.display = "";
+			bookClosed = true;
+		}
+		window.scrollBy(-7600, 0);
+	}
+</script>
+</head>
+
+<body onload="init()"
+	style="width: 100%; text-align: center; background-color: black;">
+	<div class="container"
+		style="position: absolute; top: 50px; left: 50px;">
+		<div id="foldContent" style="position: absolute; top: 0; left: 0;">
+			<div style="width: 100%; margin: auto;">
+				<div id="foldingDiv" style="display: inline-block;">
+					<img src="images/_004970702_s_H1.jpg" />
+				</div>
+			</div>
+		</div>
+		<div id="cover" class="cover"
+			style="position: absolute; top: 0; left: 0; cursor: pointer"
+			onclick="openBook()">
+			<div id="frontCover" class="front"
+				style="position: absolute; top: 0; left: 0; cursor: pointer">
+				<img src="images/_004970702_0001_s.jpg" />
+			</div>
+			<div id="frontCoverBack" class="back"
+				style="position: absolute; top: 0; left: 0; cursor: pointer">
+				<img src="images/_004970702_0002_s.jpg" />
+			</div>
+		</div>
+	</div>
+</body>
+</html>
